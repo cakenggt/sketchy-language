@@ -104,7 +104,15 @@ interface Skill {
   name: string;
 }
 
+interface HintTableEntry {
+  from: string;
+  learning: string;
+}
+
+export type Hints = Record<string, string[]>;
+
 export interface Course extends CourseMetadata {
+  hints: Hints;
   skills: Skill[];
 }
 
@@ -140,8 +148,17 @@ export const loadCourse = (docId: string) => async (dispatch: Dispatch) => {
     sheet: docId,
     tab: courseMetadata.skillSheet,
   });
+  const hintTableEntries = await getDrive<HintTableEntry>({
+    sheet: docId,
+    tab: courseMetadata.learningLanguageHints,
+  });
+  const hints = hintTableEntries.reduce((acc, { from, learning }) => {
+    acc[learning] = from.split(";");
+    return acc;
+  }, {});
   const course = {
     ...courseMetadata,
+    hints,
     skills: [
       ...(await Promise.all(
         skillMetadatas.map(skillMetadata => loadSkill(docId, skillMetadata)),

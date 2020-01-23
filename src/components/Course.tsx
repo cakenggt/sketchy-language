@@ -23,7 +23,7 @@ const Course = ({
   return (
     <>
       <div>{sheetId}</div>
-      <code>{JSON.stringify(course)}</code>
+      <code>{JSON.stringify(course, null, 2)}</code>
     </>
   );
 };
