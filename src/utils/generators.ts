@@ -8,7 +8,7 @@ const tokenizer = (str: string): string[] =>
 
 const whitespaceTokenizer = (str: string): string[] => str.split(/([\s,.:!?])/);
 
-interface TranslateChallenge {
+export interface TranslateChallenge {
   sourceLanguage: string;
   targetLanguage: string;
   prompt: string;
@@ -26,7 +26,7 @@ interface TranslateChallenge {
   }[];
 }
 
-interface JudgeChallenge {
+export interface JudgeChallenge {
   sourceLanguage: string;
   targetLanguage: string;
   prompt: string;
@@ -34,6 +34,8 @@ interface JudgeChallenge {
   correctIndices: number[];
   type: "judge";
 }
+
+export type Challenge = TranslateChallenge | JudgeChallenge;
 
 export type MetaGenerator = (
   sourceLanguage: string,

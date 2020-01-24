@@ -7,6 +7,7 @@ import {
   reverseTranslateChallengeGenerator,
   forwardJudgeChallengeGenerator,
   reverseJudgeChallengeGenerator,
+  Challenge,
 } from "./utils/generators";
 
 let nextTodoId = 0;
@@ -97,10 +98,6 @@ export interface Sentence {
   lesson: string;
   from: string;
   learning: string;
-}
-
-interface Challenge {
-  type: string;
 }
 
 export interface Lesson {
