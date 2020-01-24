@@ -4,6 +4,7 @@ import _ from "underscore";
 
 import { TranslateChallenge } from "../../utils/generators";
 import { SetNextFunction } from "./LessonPlayer";
+import HintSentence from "../HintSentence";
 
 const TranslateChallengeElement = ({
   challenge,
@@ -12,7 +13,7 @@ const TranslateChallengeElement = ({
   challenge: TranslateChallenge;
   setNextFunction: SetNextFunction;
 }) => {
-  const { choices, prompt, correctIndices } = challenge;
+  const { choices, correctIndices, tokens } = challenge;
   const [answers, setAnswers] = useState([] as number[]);
 
   useEffect(
@@ -23,7 +24,9 @@ const TranslateChallengeElement = ({
 
   return (
     <div>
-      <h2>{prompt}</h2>
+      <div>
+        <HintSentence tokens={tokens} />
+      </div>
       <div>
         {answers.map((answer, i) => {
           const choice = choices[answer];

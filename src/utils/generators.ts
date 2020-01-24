@@ -44,6 +44,11 @@ export type MetaGenerator = (
   distractorSentences: Sentence[],
 ) => (sentence: Sentence) => JudgeChallenge | TranslateChallenge;
 
+export interface Token {
+  hintTable?: HintTable;
+  value: string;
+}
+
 const translateChallengeGenerator = (
   sourceLanguage: string,
   targetLanguage: string,

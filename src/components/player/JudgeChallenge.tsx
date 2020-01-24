@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { JudgeChallenge } from "../../utils/generators";
 import { SetNextFunction } from "./LessonPlayer";
+import HintSentence from "../HintSentence";
 
 const JudgeChallengeElement = ({
   challenge,
@@ -16,7 +17,7 @@ const JudgeChallengeElement = ({
 
   return (
     <div>
-      <h2>{prompt}</h2>
+      <div>{prompt}</div>
       {choices.map((choiceText, i) => (
         <button
           disabled={choice === null ? false : true}
