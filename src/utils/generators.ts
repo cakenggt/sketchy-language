@@ -1,6 +1,6 @@
 import { shuffle } from "underscore";
 
-import { Hints } from "../actions";
+import { Hints, Sentence } from "../actions";
 import { HintTable, getHintTable, getTokens } from "./hintTable";
 
 const tokenizer = (str: string): string[] =>
@@ -35,16 +35,22 @@ interface JudgeChallenge {
   type: "judge";
 }
 
-export interface Sentence {
-  en: string;
-  "xx-TP": string;
-}
+export type MetaGenerator = (
+  sourceLanguage: string,
+  targetLanguage: string,
+  hints: Hints,
+  distractorSentences: Sentence[],
+) => (sentence: Sentence) => JudgeChallenge | TranslateChallenge;
 
 const translateChallengeGenerator = (
   sourceLanguage: string,
   targetLanguage: string,
-) => (sentence: Sentence, hints: Hints): TranslateChallenge => {
-  const targetTokens = tokenizer(sentence[targetLanguage]).map(t => ({
+  hints: Hints,
+  reverse: boolean,
+) => (sentence: Sentence): TranslateChallenge => {
+  const forwardSentence = reverse ? sentence.learning : sentence.from;
+  const reverseSentence = reverse ? sentence.from : sentence.learning;
+  const targetTokens = tokenizer(forwardSentence).map(t => ({
     tts: null,
     text: t,
   }));
@@ -60,18 +66,18 @@ const translateChallengeGenerator = (
   const correctIndices = targetTokens.map(t =>
     choices.findIndex(c => c.text === t.text),
   );
-  const sourceTokens = whitespaceTokenizer(sentence[sourceLanguage]).map(t => ({
+  const sourceTokens = whitespaceTokenizer(reverseSentence).map(t => ({
     value: t,
     hintTable: getHintTable(hints, t),
   }));
   return {
     sourceLanguage: sourceLanguage,
     targetLanguage: targetLanguage,
-    prompt: sentence[sourceLanguage],
+    prompt: reverseSentence,
     choices,
     correctIndices,
-    compactTranslations: [sentence[targetLanguage]],
-    correctSolutions: [sentence[targetLanguage]],
+    compactTranslations: [forwardSentence],
+    correctSolutions: [forwardSentence],
     correctTokens: totalTokens.map(t => t.text),
     wrongTokens: [],
     type: "translate",
@@ -79,59 +85,80 @@ const translateChallengeGenerator = (
   };
 };
 
-export const forwardTranslateChallengeGenerator = translateChallengeGenerator(
-  "xx-TP",
-  "en",
-);
+export const forwardTranslateChallengeGenerator: MetaGenerator = (
+  sourceLanguage: string,
+  targetLanguage: string,
+  hints: Hints,
+  _: Sentence[],
+) => translateChallengeGenerator(targetLanguage, sourceLanguage, hints, false);
 
 /** This isn't a very useful challenge type right now
  *  without seeing what they have learned previously
  */
-export const reverseTranslateChallengeGenerator = translateChallengeGenerator(
-  "en",
-  "xx-TP",
-);
+export const reverseTranslateChallengeGenerator: MetaGenerator = (
+  sourceLanguage: string,
+  targetLanguage: string,
+  hints: Hints,
+  _: Sentence[],
+) => translateChallengeGenerator(sourceLanguage, targetLanguage, hints, true);
 
-const getRandomSentence = (
-  sentences: Sentence[],
-  languageId: string,
-  not: string,
-) => {
-  const viable = sentences.filter(sentence => sentence[languageId] !== not);
+const getRandomSentence = (sentences: string[], not: string) => {
+  const viable = sentences.filter(sentence => sentence !== not);
   const length = viable.length;
-  return viable[Math.floor(Math.random() * length)][languageId];
+  return viable[Math.floor(Math.random() * length)];
 };
 
 const judgeChallengeGenerator = (
   sourceLanguage: string,
   targetLanguage: string,
-) => (sentence: Sentence, distractorSentences: Sentence[]): JudgeChallenge => {
+  distractorSentences: Sentence[],
+  reverse: boolean,
+) => (sentence: Sentence): JudgeChallenge => {
+  const forwardSentence = reverse ? sentence.learning : sentence.from;
+  const reverseSentence = reverse ? sentence.from : sentence.learning;
   const choices: JudgeChallenge["choices"] = [1, 2, 3].map(_ =>
     getRandomSentence(
-      distractorSentences,
-      targetLanguage,
-      sentence[targetLanguage],
+      distractorSentences.map(sentence =>
+        reverse ? sentence.learning : sentence.from,
+      ),
+      forwardSentence,
     ),
   );
   const correctIndex = Math.floor(Math.random() * choices.length);
-  choices[correctIndex] = sentence[targetLanguage];
+  choices[correctIndex] = forwardSentence;
   const correctIndices = [correctIndex];
   return {
     sourceLanguage: sourceLanguage,
     targetLanguage: targetLanguage,
-    prompt: sentence[sourceLanguage],
+    prompt: reverseSentence,
     choices,
     correctIndices,
     type: "judge",
   };
 };
 
-export const forwardJudgeChallengeGenerator = (
+export const forwardJudgeChallengeGenerator: MetaGenerator = (
   sourceLanguage: string,
   targetLanguage: string,
-) => judgeChallengeGenerator(sourceLanguage, targetLanguage);
+  _: Hints,
+  distractorSentences: Sentence[],
+) =>
+  judgeChallengeGenerator(
+    sourceLanguage,
+    targetLanguage,
+    distractorSentences,
+    false,
+  );
 
-export const reverseJudgeChallengeGenerator = (
+export const reverseJudgeChallengeGenerator: MetaGenerator = (
   sourceLanguage: string,
   targetLanguage: string,
-) => judgeChallengeGenerator(targetLanguage, sourceLanguage);
+  _: Hints,
+  distractorSentences: Sentence[],
+) =>
+  judgeChallengeGenerator(
+    targetLanguage,
+    sourceLanguage,
+    distractorSentences,
+    true,
+  );

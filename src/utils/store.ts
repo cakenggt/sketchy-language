@@ -2,10 +2,10 @@ import { applyMiddleware, createStore } from "redux";
 import logger from "redux-logger";
 import thunk from "redux-thunk";
 
-import { CourseListing, CourseMetadata } from "../actions";
+import { CourseListing, Course } from "../actions";
 
 export interface State {
-  course: CourseMetadata;
+  course: Course;
   courses: CourseListing[];
 }
 

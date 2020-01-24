@@ -1,17 +1,18 @@
 import * as React from "react";
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import _ from "underscore";
 
 import { courseSelector } from "../selectors";
 import { State } from "../utils/store";
-import { loadCourse, Dispatch, CourseMetadata } from "../actions";
+import { loadCourse, Dispatch, Course } from "../actions";
 
 const Course = ({
   course,
   loadCourseAction,
 }: {
-  course: CourseMetadata;
+  course: Course;
   loadCourseAction: (docId: string) => void;
 }) => {
   const { sheetId } = useParams();
@@ -20,10 +21,28 @@ const Course = ({
     loadCourseAction(sheetId);
   }, [sheetId]);
 
+  if (_.isEmpty(course)) {
+    return null;
+  }
+
   return (
     <>
-      <div>{sheetId}</div>
-      <code>{JSON.stringify(course, null, 2)}</code>
+      {course.skills.map((skill, i) => {
+        return (
+          <div key={i}>
+            {skill.name}{" "}
+            {skill.lessons.map((_, j) => (
+              <Link
+                key={j}
+                to={`/course/${sheetId}/practice/${i + 1}/${j + 1}`}
+              >
+                {j + 1}
+              </Link>
+            ))}
+          </div>
+        );
+      })}
+      <pre>{JSON.stringify(course, null, 2)}</pre>
     </>
   );
 };

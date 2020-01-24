@@ -1,5 +1,13 @@
+import _ from "underscore";
+
 import { getDrive } from "./utils/drive";
 import { GetState } from "./utils/store";
+import {
+  forwardTranslateChallengeGenerator,
+  reverseTranslateChallengeGenerator,
+  forwardJudgeChallengeGenerator,
+  reverseJudgeChallengeGenerator,
+} from "./utils/generators";
 
 let nextTodoId = 0;
 export const addTodo = text => ({
@@ -85,7 +93,7 @@ interface SkillMetadata {
   sheetid: string;
 }
 
-interface Sentence {
+export interface Sentence {
   lesson: string;
   from: string;
   learning: string;
@@ -95,11 +103,11 @@ interface Challenge {
   type: string;
 }
 
-interface Lesson {
+export interface Lesson {
   challenges: Challenge[];
 }
 
-interface Skill {
+export interface Skill {
   lessons: Lesson[];
   name: string;
 }
@@ -118,25 +126,49 @@ export interface Course extends CourseMetadata {
 
 export const loadSkill = async (
   docId: string,
+  courseMetadata: CourseMetadata,
   skillMetadata: SkillMetadata,
+  hints: Hints,
 ): Promise<Skill> => {
   const { name, sheetid } = skillMetadata;
+  const { fromLanguage, learningLanguage } = courseMetadata;
+
   const sentences = await getDrive<Sentence>({
     sheet: docId,
     tab: sheetid,
   });
+
   const numLessons = sentences.reduce(
     (acc, { lesson }) => Math.max(acc, parseInt(lesson)),
     0,
   );
-  const lessons = [];
+
+  const lessons: Lesson[] = [];
   for (let i = 0; i < numLessons; i++) {
     const challenges: Challenge[] = [];
     const possibleSentences = sentences.filter(
-      ({ lesson }) => lesson === i.toString(),
+      ({ lesson }) => lesson === (i + 1).toString(),
     );
-    // TODO transform possibleSentences
-    lessons[i] = { challenges };
+    const generators = [
+      forwardTranslateChallengeGenerator,
+      reverseTranslateChallengeGenerator,
+      forwardJudgeChallengeGenerator,
+      reverseJudgeChallengeGenerator,
+    ].map(generator =>
+      generator(fromLanguage, learningLanguage, hints, possibleSentences),
+    );
+
+    const firstTen = _.chunk<Sentence>(
+      _.shuffle(possibleSentences),
+      10,
+    )[0] as Sentence[];
+
+    firstTen.forEach(sentence => {
+      challenges.push(
+        generators[Math.floor(Math.random() * generators.length)](sentence),
+      );
+    });
+    lessons.push({ challenges });
   }
   return { name, lessons };
 };
@@ -161,7 +193,9 @@ export const loadCourse = (docId: string) => async (dispatch: Dispatch) => {
     hints,
     skills: [
       ...(await Promise.all(
-        skillMetadatas.map(skillMetadata => loadSkill(docId, skillMetadata)),
+        skillMetadatas.map(skillMetadata =>
+          loadSkill(docId, courseMetadata, skillMetadata, hints),
+        ),
       )),
     ],
   };

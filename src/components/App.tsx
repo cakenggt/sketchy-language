@@ -1,24 +1,25 @@
 import * as React from "react";
-import { Switch, Route, Router } from "react-router-dom";
-import { createBrowserHistory } from "history";
+import { HashRouter, Route, Switch } from "react-router-dom";
 
 import CourseList from "./CourseList";
 import Course from "./Course";
-
-const history = createBrowserHistory();
+import LessonPlayer from "./player/LessonPlayer";
 
 const App = () => (
   <div>
-    <Router history={history}>
+    <HashRouter>
       <Switch>
         <Route exact path="/">
           <CourseList />
         </Route>
-        <Route path="/course/:sheetId">
+        <Route exact path="/course/:sheetId">
           <Course />
         </Route>
+        <Route exact path="/course/:sheetId/practice/:skillId/:lessonId">
+          <LessonPlayer />
+        </Route>
       </Switch>
-    </Router>
+    </HashRouter>
   </div>
 );
 
