@@ -35,6 +35,9 @@ const LessonPlayer = ({
   const [challenges, setChallenges] = useState([] as Challenge[]);
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [nextFunction, setNextFunction] = useState<() => boolean>(null);
+  const [status, setStatus] = useState<"waiting" | "correct" | "incorrect">(
+    "waiting",
+  );
   const history = useHistory();
 
   if (_.isEmpty(course)) {
@@ -56,20 +59,27 @@ const LessonPlayer = ({
       return;
     }
     const correct = nextFunction();
-    const coursePath = `/course/${sheetId}`;
-    if (correct) {
-      if (currentChallenge < challenges.length - 2) {
-        setCurrentChallenge(currentChallenge + 1);
-      } else {
-        history.push(coursePath);
-      }
-    } else {
+
+    setStatus(correct ? "correct" : "incorrect");
+
+    if (!correct) {
       // put at end
       setChallenges([
         ...challenges.slice(0, currentChallenge),
         ...challenges.slice(currentChallenge + 1),
         challenge,
       ]);
+    }
+  };
+
+  const isLastChallenge = currentChallenge === challenges.length - 1;
+
+  const next = () => {
+    setStatus("waiting");
+    if (isLastChallenge) {
+      history.push(`/course/${sheetId}`);
+    } else {
+      setCurrentChallenge(currentChallenge + 1);
     }
   };
 
@@ -101,9 +111,15 @@ const LessonPlayer = ({
 
   return (
     <>
+      <div>
+        {currentChallenge + 1}/{challenges.length} {status}
+      </div>
       <div key={currentChallenge}>{challengeContainer}</div>
-      <button disabled={!nextFunction} onClick={grade}>
-        Next
+      <button
+        disabled={!nextFunction}
+        onClick={status === "waiting" ? grade : next}
+      >
+        {status === "waiting" ? "Grade" : isLastChallenge ? "Finish" : "Next"}
       </button>
     </>
   );
