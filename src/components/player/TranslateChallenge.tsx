@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { WiredButton } from "react-wired-element";
 import _ from "underscore";
 
 import { TranslateChallenge } from "../../utils/generators";
@@ -18,7 +19,9 @@ const TranslateChallengeElement = ({
 
   useEffect(
     () =>
-      setNextFunction(() => _.difference(correctIndices, answers).length === 0),
+      setNextFunction({
+        nextFunction: () => _.difference(correctIndices, answers).length === 0,
+      }),
     [answers],
   );
 
@@ -31,14 +34,14 @@ const TranslateChallengeElement = ({
         {answers.map((answer, i) => {
           const choice = choices[answer];
           return (
-            <button
+            <WiredButton
               key={answer}
               onClick={() =>
                 setAnswers([...answers.slice(0, i), ...answers.slice(i + 1)])
               }
             >
               {choice.text}
-            </button>
+            </WiredButton>
           );
         })}
       </div>
@@ -47,14 +50,14 @@ const TranslateChallengeElement = ({
           .map((choice, i) => ({ choice, i }))
           .filter(({ i }) => !answers.includes(i))
           .map(({ choice, i }) => (
-            <button
+            <WiredButton
               key={i}
               onClick={() => {
                 setAnswers([...answers, i]);
               }}
             >
               {choice.text}
-            </button>
+            </WiredButton>
           ))}
       </div>
     </div>

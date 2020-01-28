@@ -2,6 +2,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
+import { WiredButton, WiredProgress } from "react-wired-element";
 import _ from "underscore";
 
 import { courseSelector, lessonSelector } from "../../selectors";
@@ -12,7 +13,11 @@ import JudgeChallenge from "./JudgeChallenge";
 import TranslateChallenge from "./TranslateChallenge";
 
 type NextFunction = () => boolean;
-export type SetNextFunction = (n: NextFunction) => void;
+export type SetNextFunction = ({
+  nextFunction,
+}: {
+  nextFunction: NextFunction;
+}) => void;
 
 const LessonPlayer = ({
   course,
@@ -34,7 +39,9 @@ const LessonPlayer = ({
 
   const [challenges, setChallenges] = useState([] as Challenge[]);
   const [currentChallenge, setCurrentChallenge] = useState(0);
-  const [nextFunction, setNextFunction] = useState<() => boolean>(null);
+  const [{ nextFunction }, setNextFunction] = useState<{
+    nextFunction?: () => boolean;
+  }>({});
   const [status, setStatus] = useState<"waiting" | "correct" | "incorrect">(
     "waiting",
   );
@@ -64,11 +71,7 @@ const LessonPlayer = ({
 
     if (!correct) {
       // put at end
-      setChallenges([
-        ...challenges.slice(0, currentChallenge),
-        ...challenges.slice(currentChallenge + 1),
-        challenge,
-      ]);
+      setChallenges([...challenges, challenge]);
     }
   };
 
@@ -85,15 +88,12 @@ const LessonPlayer = ({
 
   let challengeContainer = <pre>{JSON.stringify(challenge, null, 2)}</pre>;
 
-  const nextFunctionSetter = (setter: NextFunction) =>
-    setNextFunction(() => setter);
-
   switch (challenge.type) {
     case "judge": {
       challengeContainer = (
         <JudgeChallenge
           challenge={challenge}
-          setNextFunction={nextFunctionSetter}
+          setNextFunction={setNextFunction}
         />
       );
       break;
@@ -102,7 +102,7 @@ const LessonPlayer = ({
       challengeContainer = (
         <TranslateChallenge
           challenge={challenge}
-          setNextFunction={nextFunctionSetter}
+          setNextFunction={setNextFunction}
         />
       );
       break;
@@ -111,16 +111,23 @@ const LessonPlayer = ({
 
   return (
     <>
-      <div>
-        {currentChallenge + 1}/{challenges.length} {status}
-      </div>
+      <WiredProgress value={currentChallenge} min={0} max={challenges.length} />
       <div key={currentChallenge}>{challengeContainer}</div>
-      <button
-        disabled={!nextFunction}
+      <WiredButton
+        style={{
+          color:
+            status === "waiting"
+              ? "none"
+              : status === "correct"
+              ? "green"
+              : "red",
+        }}
+        disabled={!!nextFunction ? null : true}
+        key={status}
         onClick={status === "waiting" ? grade : next}
       >
         {status === "waiting" ? "Grade" : isLastChallenge ? "Finish" : "Next"}
-      </button>
+      </WiredButton>
     </>
   );
 };

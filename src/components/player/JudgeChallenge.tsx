@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useState } from "react";
+import { WiredButton } from "react-wired-element";
 
 import { JudgeChallenge } from "../../utils/generators";
 import { SetNextFunction } from "./LessonPlayer";
-import HintSentence from "../HintSentence";
 
 const JudgeChallengeElement = ({
   challenge,
@@ -19,16 +19,16 @@ const JudgeChallengeElement = ({
     <div>
       <div>{prompt}</div>
       {choices.map((choiceText, i) => (
-        <button
-          disabled={choice === null ? false : true}
+        <WiredButton
+          style={{ background: choice === i ? "yellow" : "none" }}
           key={i}
           onClick={() => {
             setChoice(i);
-            setNextFunction(() => correctIndices.includes(i));
+            setNextFunction({ nextFunction: () => correctIndices.includes(i) });
           }}
         >
           {choiceText}
-        </button>
+        </WiredButton>
       ))}
     </div>
   );

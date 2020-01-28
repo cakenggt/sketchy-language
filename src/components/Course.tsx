@@ -1,12 +1,13 @@
 import * as React from "react";
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import _ from "underscore";
 
 import { courseSelector } from "../selectors";
 import { State } from "../utils/store";
 import { loadCourse, Dispatch, Course } from "../actions";
+import Link from "./Link";
 
 const Course = ({
   course,
@@ -34,7 +35,7 @@ const Course = ({
             {skill.lessons.map((_, j) => (
               <Link
                 key={j}
-                to={`/course/${sheetId}/practice/${i + 1}/${j + 1}`}
+                href={`/course/${sheetId}/practice/${i + 1}/${j + 1}`}
               >
                 {j + 1}
               </Link>

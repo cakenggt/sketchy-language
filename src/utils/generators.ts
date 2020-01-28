@@ -1,7 +1,7 @@
 import { shuffle } from "underscore";
 
 import { Hints, Sentence } from "../actions";
-import { HintTable, getHintTable, getTokens } from "./hintTable";
+import { getTokens } from "./hintTable";
 
 const tokenizer = (str: string): string[] =>
   str.split(/[\s,.:!?]/).filter(s => !!s);
@@ -22,7 +22,7 @@ export interface TranslateChallenge {
   tokens: {
     value: string;
     tts?: string;
-    hintTable?: HintTable;
+    hintTable?: string[];
   }[];
 }
 
@@ -45,7 +45,7 @@ export type MetaGenerator = (
 ) => (sentence: Sentence) => JudgeChallenge | TranslateChallenge;
 
 export interface Token {
-  hintTable?: HintTable;
+  hintTable?: string[];
   value: string;
 }
 
@@ -75,7 +75,7 @@ const translateChallengeGenerator = (
   );
   const sourceTokens = whitespaceTokenizer(reverseSentence).map(t => ({
     value: t,
-    hintTable: getHintTable(hints, t),
+    hintTable: hints[t],
   }));
   return {
     sourceLanguage: sourceLanguage,
