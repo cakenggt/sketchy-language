@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
 import { WiredButton, WiredProgress } from "react-wired-element";
+import styled from "styled-components";
 import _ from "underscore";
 
 import { courseSelector, lessonSelector } from "../../selectors";
@@ -18,6 +19,16 @@ export type SetNextFunction = ({
 }: {
   nextFunction: NextFunction;
 }) => void;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ProgressContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 
 const LessonPlayer = ({
   course,
@@ -110,8 +121,14 @@ const LessonPlayer = ({
   }
 
   return (
-    <>
-      <WiredProgress value={currentChallenge} min={0} max={challenges.length} />
+    <Container>
+      <ProgressContainer>
+        <WiredProgress
+          value={currentChallenge}
+          min={0}
+          max={challenges.length}
+        />
+      </ProgressContainer>
       <div key={currentChallenge}>{challengeContainer}</div>
       <WiredButton
         style={{
@@ -128,7 +145,7 @@ const LessonPlayer = ({
       >
         {status === "waiting" ? "Grade" : isLastChallenge ? "Finish" : "Next"}
       </WiredButton>
-    </>
+    </Container>
   );
 };
 

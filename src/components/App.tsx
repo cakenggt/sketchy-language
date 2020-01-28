@@ -1,12 +1,18 @@
 import * as React from "react";
 import { HashRouter, Route, Switch } from "react-router-dom";
+import styled from "styled-components";
 
 import CourseList from "./CourseList";
 import Course from "./Course";
 import LessonPlayer from "./player/LessonPlayer";
 
+const Container = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+`;
+
 const App = () => (
-  <div>
+  <Container>
     <HashRouter>
       <Switch>
         <Route exact path="/">
@@ -20,7 +26,7 @@ const App = () => (
         </Route>
       </Switch>
     </HashRouter>
-  </div>
+  </Container>
 );
 
 export default App;
