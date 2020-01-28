@@ -44,22 +44,28 @@ const TranslateChallengeElement = ({
       <AnswersContainer>
         <WiredUnderline>
           <AnswersArea>
-            {answers.map((answer, i) => {
-              const choice = choices[answer];
-              return (
-                <WiredButton
-                  key={answer}
-                  onClick={() =>
-                    setAnswers([
-                      ...answers.slice(0, i),
-                      ...answers.slice(i + 1),
-                    ])
-                  }
-                >
-                  {choice.text}
-                </WiredButton>
-              );
-            })}
+            {answers.length ? (
+              answers.map((answer, i) => {
+                const choice = choices[answer];
+                return (
+                  <WiredButton
+                    key={answer}
+                    onClick={() =>
+                      setAnswers([
+                        ...answers.slice(0, i),
+                        ...answers.slice(i + 1),
+                      ])
+                    }
+                  >
+                    {choice.text}
+                  </WiredButton>
+                );
+              })
+            ) : (
+              <WiredButton style={{ visibility: "hidden" }}>
+                placeholder
+              </WiredButton>
+            )}
           </AnswersArea>
         </WiredUnderline>
       </AnswersContainer>

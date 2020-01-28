@@ -4,6 +4,7 @@ import { WiredButton } from "react-wired-element";
 
 import { JudgeChallenge } from "../../utils/generators";
 import { SetNextFunction } from "./LessonPlayer";
+import HintSentence from "../HintSentence";
 
 const JudgeChallengeElement = ({
   challenge,
@@ -12,12 +13,12 @@ const JudgeChallengeElement = ({
   challenge: JudgeChallenge;
   setNextFunction: SetNextFunction;
 }) => {
-  const { choices, prompt, correctIndices } = challenge;
+  const { choices, correctIndices, tokens } = challenge;
   const [choice, setChoice] = useState<number>(null);
 
   return (
     <div>
-      <div>{prompt}</div>
+      <HintSentence tokens={tokens} />
       {choices.map((choiceText, i) => (
         <WiredButton
           style={{ background: choice === i ? "yellow" : "none" }}

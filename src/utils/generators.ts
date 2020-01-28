@@ -33,6 +33,11 @@ export interface JudgeChallenge {
   choices: string[];
   correctIndices: number[];
   type: "judge";
+  tokens: {
+    value: string;
+    tts?: string;
+    hintTable?: string[];
+  }[];
 }
 
 export type Challenge = TranslateChallenge | JudgeChallenge;
@@ -105,9 +110,15 @@ export const forwardTranslateChallengeGenerator: MetaGenerator = (
 export const reverseTranslateChallengeGenerator: MetaGenerator = (
   sourceLanguage: string,
   targetLanguage: string,
-  hints: Hints,
-  _: Sentence[],
-) => translateChallengeGenerator(sourceLanguage, targetLanguage, hints, true);
+  _: Hints,
+  __: Sentence[],
+) =>
+  translateChallengeGenerator(
+    sourceLanguage,
+    targetLanguage,
+    {}, // There are no hints yet for reverse sentences
+    true,
+  );
 
 const getRandomSentence = (sentences: string[], not: string) => {
   const viable = sentences.filter(sentence => sentence !== not);
@@ -118,6 +129,7 @@ const getRandomSentence = (sentences: string[], not: string) => {
 const judgeChallengeGenerator = (
   sourceLanguage: string,
   targetLanguage: string,
+  hints: Hints,
   distractorSentences: Sentence[],
   reverse: boolean,
 ) => (sentence: Sentence): JudgeChallenge => {
@@ -134,6 +146,10 @@ const judgeChallengeGenerator = (
   const correctIndex = Math.floor(Math.random() * choices.length);
   choices[correctIndex] = forwardSentence;
   const correctIndices = [correctIndex];
+  const sourceTokens = whitespaceTokenizer(reverseSentence).map(t => ({
+    value: t,
+    hintTable: hints[t],
+  }));
   return {
     sourceLanguage: sourceLanguage,
     targetLanguage: targetLanguage,
@@ -141,18 +157,20 @@ const judgeChallengeGenerator = (
     choices,
     correctIndices,
     type: "judge",
+    tokens: sourceTokens,
   };
 };
 
 export const forwardJudgeChallengeGenerator: MetaGenerator = (
   sourceLanguage: string,
   targetLanguage: string,
-  _: Hints,
+  hints: Hints,
   distractorSentences: Sentence[],
 ) =>
   judgeChallengeGenerator(
     sourceLanguage,
     targetLanguage,
+    hints,
     distractorSentences,
     false,
   );
@@ -166,6 +184,7 @@ export const reverseJudgeChallengeGenerator: MetaGenerator = (
   judgeChallengeGenerator(
     targetLanguage,
     sourceLanguage,
+    {}, // There are no hints yet for reverse sentences
     distractorSentences,
     true,
   );
