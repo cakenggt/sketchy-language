@@ -9,13 +9,17 @@ import { SetNextFunction } from "./LessonPlayer";
 import HintSentence from "../HintSentence";
 import WiredUnderline from "../WiredUnderline";
 
+const HintSentenceContainer = styled.div`
+  margin: 20px 0;
+`;
+
 const AnswersArea = styled.div`
   min-height: 35px;
   min-width: 50px;
 `;
 
 const AnswersContainer = styled.div`
-  margin: 20px 0;
+  margin-bottom: 20px;
 `;
 
 const TranslateChallengeElement = ({
@@ -38,9 +42,9 @@ const TranslateChallengeElement = ({
 
   return (
     <div>
-      <div>
+      <HintSentenceContainer>
         <HintSentence tokens={tokens} />
-      </div>
+      </HintSentenceContainer>
       <AnswersContainer>
         <WiredUnderline>
           <AnswersArea>
