@@ -1,14 +1,15 @@
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useLayoutEffect } from "react";
 import ReactRough, { Line } from "react-rough";
 import styled from "styled-components";
 
-const Container = styled.span`
+const Container = styled.div`
+  display: inline-block;
   position: relative;
-  white-space: pre;
 `;
 
-const Absolute = styled.span`
+const Absolute = styled.div`
+  display: inline-block;
   top: 0;
   bottom: 0;
   left: 0;
@@ -18,7 +19,8 @@ const Absolute = styled.span`
   pointer-events: none;
 `;
 
-const Child = styled.span`
+const Child = styled.div`
+  display: inline-block;
   position: relative;
   z-index: 1;
 `;
@@ -28,7 +30,7 @@ export default ({ children }: { children: React.ReactNode }) => {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = containerRef.current as HTMLSpanElement;
     const rect = element
       ? element.getBoundingClientRect()

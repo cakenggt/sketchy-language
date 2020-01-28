@@ -6,6 +6,10 @@ import WiredUnderline from "./WiredUnderline";
 import { WiredCard } from "react-wired-element";
 import { Token } from "../utils/generators";
 
+const HintLine = styled.div`
+  white-space: pre;
+`;
+
 const HintTable = ({ hintTable }: { hintTable: string[] }) => (
   <WiredCard
     style={{
@@ -17,7 +21,9 @@ const HintTable = ({ hintTable }: { hintTable: string[] }) => (
     }}
   >
     {hintTable.map((hint, i) => (
-      <WiredUnderline key={i}>{hint}</WiredUnderline>
+      <WiredUnderline key={i}>
+        <HintLine>{hint}</HintLine>
+      </WiredUnderline>
     ))}
   </WiredCard>
 );
