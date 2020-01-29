@@ -137,7 +137,7 @@ const LessonPlayer = ({
         {challengeContainer}
       </ChallengeContainer>
       {status === "incorrect" ? (
-        <div>Correct: {challenge.correctString}</div>
+        <div>Incorrect: {challenge.correctString}</div>
       ) : null}
       <WiredButton
         style={{

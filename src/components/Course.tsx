@@ -12,14 +12,17 @@ import { loadCourse, Dispatch, Course, CourseListing } from "../actions";
 import Link from "./Link";
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(5, 1fr);
 `;
 
 const Card = styled.div`
-  flex: 1;
+  display: flex;
+  justify-content: stretch;
+  grid-column: auto / auto;
+  grid-row: auto / auto;
 `;
 
 const Course = ({
@@ -49,7 +52,7 @@ const Course = ({
         {course.skills.map((skill, i) => {
           return (
             <Card key={i}>
-              <WiredCard>
+              <WiredCard style={{ flex: 1 }}>
                 <div>{skill.name}</div>
                 <Link href={`/course/${sheetId}/practice/${i + 1}/1`}>
                   Practice
