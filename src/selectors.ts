@@ -1,4 +1,6 @@
 import { State } from "./utils/store";
+import { getItem, StorageKey } from "./utils/localStorage";
+import { Progress } from "./actions";
 
 export const coursesSelector = (s: State) => s.courses;
 
@@ -11,3 +13,6 @@ export const lessonSelector = (s: State) => (
   skillId: number,
   lessonId: number,
 ) => skillSelector(s)(skillId)?.lessons?.[lessonId - 1];
+
+export const progressSelector = () =>
+  getItem(StorageKey.Progress) ?? ({} as Progress);

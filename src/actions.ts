@@ -9,6 +9,7 @@ import {
   reverseJudgeChallengeGenerator,
   Challenge,
 } from "./utils/generators";
+import { getItem, StorageKey, setItem } from "./utils/localStorage";
 
 let nextTodoId = 0;
 export const addTodo = text => ({
@@ -197,4 +198,18 @@ export const loadCourse = (docId: string) => async (dispatch: Dispatch) => {
     ],
   };
   dispatch({ type: "load-course", data: course });
+};
+
+export type Progress = Record<string, Record<string, number>>;
+
+export const setProgress = (
+  courseId: string,
+  skill: string,
+  lesson: number,
+) => {
+  const currentProgress = getItem(StorageKey.Progress) ?? ({} as Progress);
+  const courseProgress = currentProgress[courseId] ?? {};
+  courseProgress[skill] = lesson;
+  currentProgress[courseId] = courseProgress;
+  setItem(StorageKey.Progress, JSON.stringify(currentProgress));
 };

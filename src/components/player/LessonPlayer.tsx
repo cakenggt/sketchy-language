@@ -8,7 +8,13 @@ import _ from "underscore";
 
 import { courseSelector, lessonSelector } from "../../selectors";
 import { State } from "../../utils/store";
-import { loadCourse, Dispatch, Course, Lesson } from "../../actions";
+import {
+  loadCourse,
+  Dispatch,
+  Course,
+  Lesson,
+  setProgress,
+} from "../../actions";
 import { Challenge } from "../../utils/generators";
 import JudgeChallenge from "./JudgeChallenge";
 import TranslateChallenge from "./TranslateChallenge";
@@ -38,10 +44,12 @@ const LessonPlayer = ({
   course,
   lessonSelectorCurry,
   loadCourseAction,
+  setProgress,
 }: {
   course: Course;
   lessonSelectorCurry: (skillId: number, lessonId: number) => Lesson;
   loadCourseAction: (docId: string) => void;
+  setProgress: (courseId: string, skillId: string, lesson: number) => void;
 }) => {
   const { sheetId, skillId, lessonId } = useParams();
   const lesson = lessonSelectorCurry(parseInt(skillId), parseInt(lessonId));
@@ -95,6 +103,7 @@ const LessonPlayer = ({
   const next = () => {
     setStatus("waiting");
     if (isLastChallenge) {
+      setProgress(sheetId, skillId, parseInt(lessonId));
       history.push(`/course/${sheetId}`);
     } else {
       setCurrentChallenge(currentChallenge + 1);
@@ -165,5 +174,6 @@ export default connect(
   }),
   (dispatch: Dispatch) => ({
     loadCourseAction: (docId: string) => dispatch(loadCourse(docId)),
+    setProgress: setProgress,
   }),
 )(LessonPlayer);

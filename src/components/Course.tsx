@@ -6,9 +6,19 @@ import { WiredCard } from "react-wired-element";
 import styled from "styled-components";
 import _ from "underscore";
 
-import { courseSelector, coursesSelector } from "../selectors";
+import {
+  courseSelector,
+  coursesSelector,
+  progressSelector,
+} from "../selectors";
 import { State } from "../utils/store";
-import { loadCourse, Dispatch, Course, CourseListing } from "../actions";
+import {
+  loadCourse,
+  Dispatch,
+  Course,
+  CourseListing,
+  Progress,
+} from "../actions";
 import Link from "./Link";
 
 const Container = styled.div`
@@ -29,10 +39,12 @@ const Course = ({
   course,
   courses,
   loadCourseAction,
+  progress,
 }: {
   course: Course;
   courses: CourseListing[];
   loadCourseAction: (docId: string) => void;
+  progress: Progress;
 }) => {
   const { sheetId } = useParams();
   const courseName = courses.find(m => m.sheetid === sheetId)?.coursename;
@@ -50,12 +62,34 @@ const Course = ({
       <h1>{courseName}</h1>
       <Container>
         {course.skills.map((skill, i) => {
+          const skillId = i + 1;
+          const nextLessonFromProgress =
+            (progress[sheetId]?.[skillId] ?? 0) + 1;
+          const totalLessons = skill.lessons.length;
+          // Check previous skill to see if it is finished
+          const prevSkill = course.skills[i - 1];
+          const isAvailable =
+            !prevSkill ||
+            progress[sheetId]?.[skillId - 1] >= prevSkill.lessons.length;
+          const isFinished = nextLessonFromProgress > totalLessons;
+          const label = isAvailable
+            ? isFinished
+              ? "Practice"
+              : `Practice ${nextLessonFromProgress - 1}/${totalLessons}`
+            : "Blocked";
           return (
             <Card key={i}>
               <WiredCard style={{ flex: 1 }}>
                 <div>{skill.name}</div>
-                <Link href={`/course/${sheetId}/practice/${i + 1}/1`}>
-                  Practice
+                <Link
+                  disabled={isAvailable ? null : true}
+                  href={`/course/${sheetId}/practice/${skillId}/${
+                    isFinished
+                      ? nextLessonFromProgress - 1
+                      : nextLessonFromProgress
+                  }`}
+                >
+                  {label}
                 </Link>
               </WiredCard>
             </Card>
@@ -67,7 +101,11 @@ const Course = ({
 };
 
 export default connect(
-  (s: State) => ({ course: courseSelector(s), courses: coursesSelector(s) }),
+  (s: State) => ({
+    course: courseSelector(s),
+    courses: coursesSelector(s),
+    progress: progressSelector(),
+  }),
   (dispatch: Dispatch) => ({
     loadCourseAction: (docId: string) => dispatch(loadCourse(docId)),
   }),
