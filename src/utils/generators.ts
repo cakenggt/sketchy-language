@@ -14,8 +14,7 @@ export interface TranslateChallenge {
   prompt: string;
   choices: { tts: null; text: string }[];
   correctIndices: number[];
-  compactTranslations: string[];
-  correctSolutions: string[];
+  correctString: string;
   correctTokens: string[];
   wrongTokens: string[];
   type: "translate";
@@ -32,6 +31,7 @@ export interface JudgeChallenge {
   prompt: string;
   choices: string[];
   correctIndices: number[];
+  correctString: string;
   type: "judge";
   tokens: {
     value: string;
@@ -88,9 +88,8 @@ const translateChallengeGenerator = (
     prompt: reverseSentence,
     choices,
     correctIndices,
-    compactTranslations: [forwardSentence],
-    correctSolutions: [forwardSentence],
     correctTokens: totalTokens.map(t => t.text),
+    correctString: forwardSentence,
     wrongTokens: [],
     type: "translate",
     tokens: sourceTokens,
@@ -156,6 +155,7 @@ const judgeChallengeGenerator = (
     prompt: reverseSentence,
     choices,
     correctIndices,
+    correctString: forwardSentence,
     type: "judge",
     tokens: sourceTokens,
   };

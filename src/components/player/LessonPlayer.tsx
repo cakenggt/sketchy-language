@@ -25,6 +25,10 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
+const ChallengeContainer = styled.div`
+  margin: 20px 0;
+`;
+
 const ProgressContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -129,7 +133,12 @@ const LessonPlayer = ({
           max={challenges.length}
         />
       </ProgressContainer>
-      <div key={currentChallenge}>{challengeContainer}</div>
+      <ChallengeContainer key={currentChallenge}>
+        {challengeContainer}
+      </ChallengeContainer>
+      {status === "incorrect" ? (
+        <div>Correct: {challenge.correctString}</div>
+      ) : null}
       <WiredButton
         style={{
           color:
