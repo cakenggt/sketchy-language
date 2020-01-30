@@ -12,6 +12,7 @@ const CoursesContainer = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 30px;
 `;
 
 const CourseListing = styled.div`
@@ -20,7 +21,8 @@ const CourseListing = styled.div`
 
 const CourseList = ({ courses }: { courses: CourseListing[] }) => (
   <>
-    <h1>Courses</h1>
+    <h1>Sketchy Language</h1>
+    <h2>Courses</h2>
     <CoursesContainer>
       {courses
         ? courses.map(({ coursename, sheetid }, i) => (
@@ -28,8 +30,9 @@ const CourseList = ({ courses }: { courses: CourseListing[] }) => (
               <Link href={`/course/${sheetid}`}>{coursename}</Link>
             </CourseListing>
           ))
-        : null}
+        : "Loading..."}
     </CoursesContainer>
+    <Link href="/about">About</Link>
   </>
 );
 

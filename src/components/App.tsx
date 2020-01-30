@@ -5,6 +5,7 @@ import styled from "styled-components";
 import CourseList from "./CourseList";
 import Course from "./Course";
 import LessonPlayer from "./player/LessonPlayer";
+import AboutPage from "./AboutPage";
 
 const Container = styled.div`
   max-width: 800px;
@@ -23,6 +24,9 @@ const App = () => (
         </Route>
         <Route exact path="/course/:sheetId/practice/:skillId/:lessonId">
           <LessonPlayer />
+        </Route>
+        <Route exact path="/about">
+          <AboutPage />
         </Route>
       </Switch>
     </HashRouter>

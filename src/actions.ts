@@ -122,14 +122,12 @@ export interface Course extends CourseMetadata {
   skills: Skill[];
 }
 
-export const loadSkill = async (
+const loadSkill = async (
   docId: string,
-  courseMetadata: CourseMetadata,
   skillMetadata: SkillMetadata,
   hints: Hints,
 ): Promise<Skill> => {
   const { name, sheetid } = skillMetadata;
-  const { fromLanguage, learningLanguage } = courseMetadata;
 
   const sentences = await getDrive<Sentence>({
     sheet: docId,
@@ -152,9 +150,7 @@ export const loadSkill = async (
       reverseTranslateChallengeGenerator,
       forwardJudgeChallengeGenerator,
       reverseJudgeChallengeGenerator,
-    ].map(generator =>
-      generator(fromLanguage, learningLanguage, hints, possibleSentences),
-    );
+    ].map(generator => generator(hints, possibleSentences));
 
     const firstTen = _.chunk<Sentence>(
       _.shuffle(possibleSentences),
@@ -192,7 +188,7 @@ export const loadCourse = (docId: string) => async (dispatch: Dispatch) => {
     skills: [
       ...(await Promise.all(
         skillMetadatas.map(skillMetadata =>
-          loadSkill(docId, courseMetadata, skillMetadata, hints),
+          loadSkill(docId, skillMetadata, hints),
         ),
       )),
     ],

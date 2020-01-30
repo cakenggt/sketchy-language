@@ -54,7 +54,7 @@ const Course = ({
   }, [sheetId]);
 
   if (_.isEmpty(course)) {
-    return null;
+    return <span>Loading...</span>;
   }
 
   return (
