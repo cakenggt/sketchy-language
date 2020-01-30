@@ -69,13 +69,7 @@ export interface CourseMetadata {
 }
 
 const getCourseAttributes = () =>
-  new Set([
-    "learningLanguage",
-    "fromLanguage",
-    "learningLanguageHints",
-    "numSkills",
-    "skillSheet",
-  ]);
+  new Set(["learningLanguageHints", "numSkills", "skillSheet"]);
 
 const convertCourseMetadata = (metadata: Metadata[]): CourseMetadata => {
   const courseAttributes = getCourseAttributes();
