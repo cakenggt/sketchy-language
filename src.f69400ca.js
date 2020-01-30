@@ -45347,7 +45347,7 @@ exports.loadCourses = function () {
 };
 
 var getCourseAttributes = function getCourseAttributes() {
-  return new Set(["learningLanguage", "fromLanguage", "learningLanguageHints", "numSkills", "skillSheet"]);
+  return new Set(["learningLanguageHints", "numSkills", "skillSheet"]);
 };
 
 var convertCourseMetadata = function convertCourseMetadata(metadata) {
@@ -63683,7 +63683,9 @@ var TranslateChallengeElement = function TranslateChallengeElement(_a) {
   react_1.useEffect(function () {
     return setNextFunction({
       nextFunction: function nextFunction() {
-        return underscore_1.default.difference(correctIndices, answers).length === 0;
+        return underscore_1.default.difference(correctIndices, answers).length === 0 && answers.reduce(function (acc, answer, i) {
+          return acc && answer === correctIndices[i];
+        }, true);
       }
     });
   }, [answers]);
@@ -64225,7 +64227,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63133" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51854" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
