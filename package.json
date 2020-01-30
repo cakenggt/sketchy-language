@@ -6,7 +6,7 @@
   "scripts": {
     "start": "parcel --public-url /lll src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "upload": "parcel build --public-url /sketchy-language src/index.html && gh-pages -d dist"
+    "upload": "rm -r dist && parcel build --public-url /sketchy-language src/index.html && gh-pages -d dist"
   },
   "author": "",
   "license": "ISC",
