@@ -36,11 +36,8 @@ const TranslateChallengeElement = ({
     () =>
       setNextFunction({
         nextFunction: () =>
-          answers.reduce(
-            (acc, answer, i) =>
-              acc && choices[answer].text === choices[correctIndices[i]].text,
-            true,
-          ),
+          correctIndices.map(i => choices[i].text).join(" ") ===
+          answers.map(i => choices[i].text).join(" "),
       }),
     [answers],
   );
