@@ -181,9 +181,9 @@ export const loadCourse = (docId: string) => async (dispatch: Dispatch) => {
     hints,
     skills: [
       ...(await Promise.all(
-        skillMetadatas.map(skillMetadata =>
-          loadSkill(docId, skillMetadata, hints),
-        ),
+        skillMetadatas
+          .filter(meta => meta.name && meta.sheetid)
+          .map(skillMetadata => loadSkill(docId, skillMetadata, hints)),
       )),
     ],
   };
