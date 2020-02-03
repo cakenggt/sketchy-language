@@ -21,9 +21,11 @@ const HintTable = ({ hintTable }: { hintTable: string[] }) => (
     }}
   >
     {hintTable.map((hint, i) => (
-      <WiredUnderline key={i}>
-        <HintLine>{hint}</HintLine>
-      </WiredUnderline>
+      <div>
+        <WiredUnderline key={i}>
+          <HintLine>{hint}</HintLine>
+        </WiredUnderline>
+      </div>
     ))}
   </WiredCard>
 );
