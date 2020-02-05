@@ -74,7 +74,7 @@ const Course = ({
           const isFinished = nextLessonFromProgress > totalLessons;
           const label = isAvailable
             ? isFinished
-              ? "Practice"
+              ? "Review"
               : `Practice ${nextLessonFromProgress - 1}/${totalLessons}`
             : "Blocked";
           return (
@@ -83,10 +83,10 @@ const Course = ({
                 <div>{skill.name}</div>
                 <Link
                   disabled={isAvailable ? null : true}
-                  href={`/course/${sheetId}/practice/${skillId}/${
+                  href={`/course/${sheetId}/${
                     isFinished
-                      ? nextLessonFromProgress - 1
-                      : nextLessonFromProgress
+                      ? `review/${skillId}`
+                      : `practice/${skillId}/${nextLessonFromProgress}`
                   }`}
                 >
                   {label}

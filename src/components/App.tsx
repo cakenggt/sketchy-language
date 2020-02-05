@@ -4,8 +4,9 @@ import styled from "styled-components";
 
 import CourseList from "./CourseList";
 import Course from "./Course";
-import LessonPlayer from "./player/LessonPlayer";
 import AboutPage from "./AboutPage";
+import LessonPage from "./LessonPage";
+import ReviewPage from "./ReviewPage";
 
 const Container = styled.div`
   max-width: 800px;
@@ -23,7 +24,10 @@ const App = () => (
           <Course />
         </Route>
         <Route exact path="/course/:sheetId/practice/:skillId/:lessonId">
-          <LessonPlayer />
+          <LessonPage />
+        </Route>
+        <Route exact path="/course/:sheetId/review/:skillId">
+          <ReviewPage />
         </Route>
         <Route exact path="/about">
           <AboutPage />

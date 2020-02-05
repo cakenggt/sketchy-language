@@ -1,20 +1,9 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { useParams, useHistory } from "react-router-dom";
+import { useState } from "react";
 import { WiredButton, WiredProgress } from "react-wired-element";
 import styled from "styled-components";
 import _ from "underscore";
 
-import { courseSelector, lessonSelector } from "../../selectors";
-import { State } from "../../utils/store";
-import {
-  loadCourse,
-  Dispatch,
-  Course,
-  Lesson,
-  setProgress,
-} from "../../actions";
 import { Challenge } from "../../utils/generators";
 import JudgeChallenge from "./JudgeChallenge";
 import TranslateChallenge from "./TranslateChallenge";
@@ -40,27 +29,14 @@ const ProgressContainer = styled.div`
   justify-content: center;
 `;
 
-const LessonPlayer = ({
-  course,
-  lessonSelectorCurry,
-  loadCourseAction,
-  setProgress,
+export default ({
+  challenges: initialChallenges,
+  onFinish,
 }: {
-  course: Course;
-  lessonSelectorCurry: (skillId: number, lessonId: number) => Lesson;
-  loadCourseAction: (docId: string) => void;
-  setProgress: (courseId: string, skillId: string, lesson: number) => void;
+  challenges: Challenge[];
+  onFinish: () => void;
 }) => {
-  const { sheetId, skillId, lessonId } = useParams();
-  const lesson = lessonSelectorCurry(parseInt(skillId), parseInt(lessonId));
-
-  useEffect(() => {
-    if (_.isEmpty(course)) {
-      loadCourseAction(sheetId);
-    }
-  }, [sheetId]);
-
-  const [challenges, setChallenges] = useState([] as Challenge[]);
+  const [challenges, setChallenges] = useState(initialChallenges);
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [{ nextFunction }, setNextFunction] = useState<{
     nextFunction?: () => boolean;
@@ -68,15 +44,6 @@ const LessonPlayer = ({
   const [status, setStatus] = useState<"waiting" | "correct" | "incorrect">(
     "waiting",
   );
-  const history = useHistory();
-
-  if (_.isEmpty(course)) {
-    return null;
-  }
-
-  if (!challenges.length) {
-    setChallenges(lesson.challenges);
-  }
 
   const challenge = challenges[currentChallenge];
 
@@ -103,8 +70,7 @@ const LessonPlayer = ({
   const next = () => {
     setStatus("waiting");
     if (isLastChallenge) {
-      setProgress(sheetId, skillId, parseInt(lessonId));
-      history.push(`/course/${sheetId}`);
+      onFinish();
     } else {
       setCurrentChallenge(currentChallenge + 1);
     }
@@ -166,14 +132,3 @@ const LessonPlayer = ({
     </Container>
   );
 };
-
-export default connect(
-  (s: State) => ({
-    course: courseSelector(s),
-    lessonSelectorCurry: lessonSelector(s),
-  }),
-  (dispatch: Dispatch) => ({
-    loadCourseAction: (docId: string) => dispatch(loadCourse(docId)),
-    setProgress: setProgress,
-  }),
-)(LessonPlayer);
