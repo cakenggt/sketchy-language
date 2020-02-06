@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { WiredButton } from "react-wired-element";
 import styled from "styled-components";
 
@@ -21,6 +21,10 @@ const JudgeChallengeElement = ({
   const { choices, correctIndices, tokens } = challenge;
   const [choice, setChoice] = useState<number>(null);
 
+  useEffect(() => {
+    setNextFunction({ nextFunction: () => correctIndices.includes(choice) });
+  }, [choice]);
+
   return (
     <div>
       <HintSentenceContainer>
@@ -32,7 +36,6 @@ const JudgeChallengeElement = ({
           key={i}
           onClick={() => {
             setChoice(i);
-            setNextFunction({ nextFunction: () => correctIndices.includes(i) });
           }}
         >
           {choiceText}
